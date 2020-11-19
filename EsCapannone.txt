@@ -1,0 +1,83 @@
+finish
+/clear
+
+c***
+c*** parametri
+c***
+
+!sezione colonna
+bc = 160
+hc = 152
+ac = 6
+ec = 9
+
+!sezione tetto
+bt = 200
+ht = 200
+at = 9
+et = 15
+
+/prep7
+
+et,1,188,,,3
+mp,ex,1,205000
+mp,prxy,1,0.3
+
+sectype,1,beam,i,colonna,5
+secdata,bc,bc,hc,ec,ec,ac
+sectype,2,beam,i,tetto,5
+secdata,bt,bt,ht,et,et,ec
+
+c***
+c*** generazione diretta
+c***
+
+n,1,-5000,0
+n,2,-5000,5000
+n,3,-4200,5000
+n,4,-5000,6500
+n,5,0,8000
+n,6,5000,6500
+n,7,5000,5000
+n,8,4200,5000
+n,9,5000,0
+
+secnum,1 !colonna
+e,1,2,3
+e,2,3,1
+e,2,4,3
+e,9,7,8
+e,7,8,9
+e,7,6,8
+
+secnum,2 !tetto
+e,4,5,6
+e,5,6,4
+
+!vincoli
+d,1,all,0
+d,9,all,0
+
+!problema piano
+d,all,uz,0
+d,all,rotx,0
+d,all,roty,0
+
+!carico
+f,3,fy,-75000
+f,8,fy,-25000
+
+finish
+
+/solu
+solve
+finish
+
+!post-processing
+/post1
+/eshape,1
+pldisp,2
+
+etable,SBzT_I,smisc,34
+etable,SBzT_J,smisc,39
+plls,SBzT_I,SBzT_J

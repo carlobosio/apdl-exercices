@@ -1,0 +1,83 @@
+finish
+/clear
+
+c***
+c*** parametri
+c***
+
+w1 = 400
+w2 = 400
+w3 = 400
+t1 = 5
+t2 = 5
+t3 = 5
+
+Ri = 245
+Re = 250
+N = 20
+
+/prep7
+
+et,1,188,,,3
+mp,ex,1,205000
+mp,prxy,1,0.3
+
+sectype,1,beam,i,braccio,5
+secdata,w1,w2,w3,t1,t2,t3
+sectype,2,beam,ctube,colonna,5
+secdata,Ri,Re,N
+
+c***
+c*** generazione diretta
+c***
+
+n,1,0,0,0
+n,2,0,3500,0
+n,3,500,3500,0
+n,4,0,5200,0
+n,5,0,5200,0
+n,6,500,5200,0
+n,7,500,3500,0
+n,8,4500,5200,0
+n,9,-200,3000,0
+
+secnum,2 !colonna
+e,1,2,9
+e,2,3,9
+e,2,4,9
+
+secnum,1 !braccio
+e,5,6,9
+e,6,7,9
+e,6,8,9
+
+! vincoli
+d,1,all,0
+cp,1,ux,3,7
+cp,2,ux,4,5
+cp,3,uy,4,5
+
+!problema piano
+d,all,uz,0
+d,all,rotx,0
+d,all,roty,0
+
+!carico
+f,8,fy,-20000
+
+finish
+
+! soluzione
+
+/solu
+solve
+finish
+
+! post-processing
+/post1
+/eshape,1
+pldisp,2
+
+etable,My_i,smisc,2
+etable,My_j,smisc,15
+plls,My_i,My_j
