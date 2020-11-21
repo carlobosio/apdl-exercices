@@ -1,0 +1,103 @@
+finish 
+/clear
+
+c***
+c*** parametri
+c***
+
+! geometria
+l = 2400
+b = 100
+h = 100
+e = 10
+h1 = h-e
+a = 6
+
+!carico
+p = 10000/(l*b) ![MPa]
+
+/prep7
+
+!materiale
+
+mp,ex,1,205000
+mp,prxy,1,0.3
+et,1,181
+keyopt,1,5,1 ! formulazione avanzata shell con curvatura
+
+! proprietà sezione
+sectype,1,shell ! ali
+secdata,e
+sectype,2,shell ! anima
+secdata,a
+
+c*** geometria
+
+k,1,-b/2,h1/2,0
+k,2,0,h1/2,0
+k,3,b/2,h1/2,0
+k,4,-b/2,-h1/2,0
+k,5,0,-h1/2,0
+k,6,b/2,-h1/2,0
+k,7,-b/2,h1/2,l
+k,8,0,h1/2,l
+k,9,b/2,h1/2,l
+k,10,-b/2,-h1/2,l
+k,11,0,-h1/2,l
+k,12,b/2,-h1/2,l
+
+a,1,2,8,7
+a,2,3,9,8	! ali
+a,4,5,11,10
+a,5,6,12,11
+
+a,2,5,11,8	! anima
+
+! mesh
+
+esize,10
+secnum,1
+amesh,1,4
+
+secnum,2
+amesh,5
+
+! vincoli
+
+nsel,s,loc,z,0
+d,all,uy,0
+
+nsel,s,loc,z,l+0.1,l-0.1
+d,all,uy,0
+alls
+
+! vincoli per labilità
+
+nn1 = node(0,-h1/2,0)
+d,nn1,ux,0
+d,nn1,uz,0
+
+nn2 = node(0,-h1/2,l)
+d,nn2,ux,0
+
+! carichi
+
+sfa,1,,press,p
+sfa,2,,press,p
+alls
+
+finish
+
+! soluzione
+/solu
+solve
+finish
+
+! post-processing
+/post1
+/view,1,1,1,1
+plnsol,u,y	! displacement y
+!/eof
+plnsol,s,z	! tensioni z
+/eof
+plnsol,s,yz	! tensioni yz
